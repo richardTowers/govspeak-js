@@ -10,8 +10,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-function run() {
-  const result = render(document.querySelector<HTMLTextAreaElement>('#input')!.value)
+async function run() {
+  const result = await render(document.querySelector<HTMLTextAreaElement>('#input')!.value)
   document.querySelector<HTMLDivElement>('#output')!.innerText = result
 }
 document.addEventListener('keyup', run)

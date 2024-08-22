@@ -1,7 +1,5 @@
-import { default as k, KramedStatic } from 'kramed'
+import { marked } from 'marked'
 
-const kramed = k as unknown as KramedStatic // Use TypeScript, they said. It'll be fun, they said.
-
-export function render(input: string) {
-  return kramed(input)
+export async function render(input: string) {
+  return await marked(input)
 }

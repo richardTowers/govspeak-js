@@ -10,12 +10,11 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@types/kramed": "^0.5.5",
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
     "vitest": "^2.0.5"
   },
   "dependencies": {
-    "kramed": "^0.5.6"
+    "marked": "^14.0.0"
   }
 }
