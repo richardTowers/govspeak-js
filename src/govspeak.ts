@@ -1,22 +1,20 @@
-import { marked } from 'marked'
-import DOMPurify from 'dompurify'
-import { JSDOM } from 'jsdom'
-import allowedTags from './allowed-tags'
-import allowedAttributes from './allowed-attributes'
-
-const purify = DOMPurify(new JSDOM('').window)
+import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import {plugin as remarkAbbr} from 'remark-abbr'
+import {unified} from 'unified'
+import schema from './sanitize/allowed-schema'
 
 export async function render(input: string) {
-  const dirtyHtml = await marked(input, { async: true })
+  const html = await unified()
+    .use(remarkParse)
+    .use(remarkAbbr, { expandFirst: true }) // TODO - this doesn't work, and isn't typed correctly
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+    .use(rehypeSanitize, schema)
+    .use(rehypeStringify).process(input)
 
-  // TODO: allow these allow lists to be customized, as govspeak ruby does
-  purify.addHook('uponSanitizeAttribute', (currentNode, data) => {
-    const attributesAllowedOnThisElement = allowedAttributes[currentNode.tagName.toLowerCase()] || []
-    const attrs = [...allowedAttributes.all, ...attributesAllowedOnThisElement]
-    data.keepAttr = attrs.includes(data.attrName)
-  })
-
-  const cleanHtml = purify.sanitize(dirtyHtml, { ALLOWED_TAGS: allowedTags })
-
-  return cleanHtml
+  return String(html)
 }

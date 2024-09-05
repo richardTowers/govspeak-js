@@ -2,11 +2,11 @@ import { expect, test } from 'vitest'
 import { render } from './govspeak'
 
 test('renders a simple paragraph', async () => {
-  expect(await render('a simple paragraph')).toEqual('<p>a simple paragraph</p>\n')
+  expect(await render('a simple paragraph')).toEqual('<p>a simple paragraph</p>')
 })
 
 test('renders a heading', async () => {
-  expect(await render('## a heading')).toEqual('<h2>a heading</h2>\n')
+  expect(await render('## a heading')).toEqual('<h2>a heading</h2>')
 })
 
 test('does not allow JS injection', async () => {
@@ -14,8 +14,8 @@ test('does not allow JS injection', async () => {
   // Govspeak on the other hand, post-processes the dirty HTML to restrict the elements allowed - https://github.com/alphagov/govspeak/blob/main/lib/govspeak/html_sanitizer.rb
 
   expect(await render('<script>alert("lol pwned")</script>')).toEqual('')
-  expect(await render('## Heading with injection <script>alert("lol pwned")</script>')).toEqual('<h2>Heading with injection </h2>\n')
-  expect(await render('Paragraph with injection <script>alert("lol pwned")</script>')).toEqual('<p>Paragraph with injection </p>\n')
+  expect(await render('## Heading with injection <script>alert("lol pwned")</script>')).toEqual('<h2>Heading with injection </h2>')
+  expect(await render('Paragraph with injection <script>alert("lol pwned")</script>')).toEqual('<p>Paragraph with injection </p>')
   expect(await render('<img src="example.com/404" onerror="javascript:alert()">')).toEqual('<img src="example.com/404">')
 })
 
@@ -24,7 +24,11 @@ test('does not allow CSS injection', async () => {
   // Govspeak on the other hand, post-processes the dirty HTML to restrict the elements allowed - https://github.com/alphagov/govspeak/blob/main/lib/govspeak/html_sanitizer.rb
 
   expect(await render('<style>body { color: white; }</style>')).toEqual('')
-  expect(await render('## Heading with injection <style>body { color: white; }</style>')).toEqual('<h2>Heading with injection </h2>\n') // !!
-  expect(await render('Paragraph with injection <style>body { color: white; }</style>')).toEqual('<p>Paragraph with injection </p>\n')
+  expect(await render('## Heading with injection <style>body { color: white; }</style>')).toEqual('<h2>Heading with injection </h2>') // !!
+  expect(await render('Paragraph with injection <style>body { color: white; }</style>')).toEqual('<p>Paragraph with injection </p>')
   expect(await render('<img src="example.com/404" style="width: 100%">')).toEqual('<img src="example.com/404">')
+})
+
+test('supports acronyms', async () => {
+  expect(await render('The FCDO\n\n*[FCDO]: Foreign, Commonwealth and Development Office')).toEqual('<p>The <abbr>FCDO</abbr></p>')
 })
