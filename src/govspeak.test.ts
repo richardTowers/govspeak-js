@@ -30,5 +30,5 @@ test('does not allow CSS injection', async () => {
 })
 
 test('supports acronyms', async () => {
-  expect(await render('The FCDO\n\n*[FCDO]: Foreign, Commonwealth and Development Office')).toEqual('<p>The <abbr>FCDO</abbr></p>')
+  expect(await render('The FCDO\n\n*[FCDO]: Foreign, Commonwealth and Development Office')).toEqual('<p>The <abbr title="Foreign, Commonwealth and Development Office">FCDO</abbr></p>')
 })
