@@ -12,7 +12,6 @@
   "devDependencies": {
     "@types/dompurify": "^3.0.5",
     "@types/jsdom": "^21.1.7",
-    "@types/remark-abbr": "^1.4.4",
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
     "vitest": "^2.0.5"
