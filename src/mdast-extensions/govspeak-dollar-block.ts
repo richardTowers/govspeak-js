@@ -1,16 +1,12 @@
 import type {CompileContext, Extension as FromMarkdownExtension, Token} from 'mdast-util-from-markdown'
-import { Data, Parent } from 'mdast'
+import { Parent } from 'mdast'
 
-interface GovspeakCallToActionData extends Data {}
 interface GovspeakCallToAction extends Parent {
   type: 'govspeakCallToAction'
-  data?: GovspeakCallToActionData | undefined
 }
 
-interface GovspeakDollarBlockContentData extends Data {}
 interface GovspeakDollarBlockContent extends Parent {
   type: 'govspeakDollarBlockContent'
-  data?: GovspeakDollarBlockContentData | undefined
 }
 
 declare module 'mdast' {
