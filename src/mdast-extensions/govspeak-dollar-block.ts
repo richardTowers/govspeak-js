@@ -4,6 +4,9 @@ import { Parent } from 'mdast'
 interface GovspeakCallToAction extends Parent {
   type: 'govspeakCallToAction'
 }
+interface GovspeakPlace extends Parent {
+  type: 'govspeakPlace'
+}
 
 interface GovspeakDollarBlockContent extends Parent {
   type: 'govspeakDollarBlockContent'
@@ -12,6 +15,7 @@ interface GovspeakDollarBlockContent extends Parent {
 declare module 'mdast' {
   interface RootContentMap {
     govspeakCallToAction: GovspeakCallToAction,
+    govspeakPlace: GovspeakPlace,
     govspeakDollarBlockContent: GovspeakDollarBlockContent
   }
 }
@@ -20,10 +24,12 @@ export function govspeakDollarBlockFromMarkdown(): FromMarkdownExtension {
   return {
     enter: {
       govspeakCallToAction: enterGovspeakCallToAction,
+      govspeakPlace: enterGovspeakPlace,
       govspeakDollarBlockContent: enterGovspeakDollarBlockContent,
     },
     exit: {
       govspeakCallToAction: exit,
+      govspeakPlace: exit,
       govspeakDollarBlockContent: exit,
     }
   }
@@ -48,6 +54,22 @@ export function govspeakDollarBlockFromMarkdown(): FromMarkdownExtension {
           hName: 'div',
           hProperties: {
             className: ['call-to-action']
+          }
+        }
+      },
+      token
+    )
+  }
+
+  function enterGovspeakPlace(this: CompileContext, token: Token) {
+    this.enter(
+      {
+        type: 'govspeakCallToAction',
+        children: [],
+        data: {
+          hName: 'div',
+          hProperties: {
+            className: ['place']
           }
         }
       },
