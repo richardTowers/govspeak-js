@@ -175,7 +175,7 @@ export function govspeakDollarBlock(): Extension {
        * ```
        */
       function contentStart(code: Code): State | undefined {
-        effects.enter(types.chunkFlow)
+        effects.enter(types.data)
         return contentChunk(code)
       }
 
@@ -190,8 +190,11 @@ export function govspeakDollarBlock(): Extension {
        * ```
        */
       function contentChunk(code: Code): State | undefined {
-        if (code === codes.eof || markdownLineEnding(code)) {
-          effects.exit(types.chunkFlow)
+        if (code === codes.eof) {
+          return nok(code)
+        }
+        if (markdownLineEnding(code)) {
+          effects.exit(types.data)
           return atLineEnding(code)
         }
 

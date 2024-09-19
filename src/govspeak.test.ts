@@ -32,3 +32,7 @@ test('does not allow CSS injection', async () => {
 test('supports acronyms', async () => {
   expect(await render('The FCDO\n\n*[FCDO]: Foreign, Commonwealth and Development Office')).toEqual('<p>The <abbr title="Foreign, Commonwealth and Development Office">FCDO</abbr></p>')
 })
+
+test('supports calls to action', async () => {
+  expect(await render('$CTA\nCall to Arms!\n* Bullet points\n*Are not allowed\n$CTA')).toEqual('<div class="call-to-action"><p>Call to Arms!* Bullet points*Are not allowed</p></div>')
+})

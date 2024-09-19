@@ -6,12 +6,14 @@ import remarkAbbr from '@richardtowers/remark-abbr'
 import remarkRehype from 'remark-rehype'
 import {unified} from 'unified'
 import schema from './sanitize/allowed-schema'
+import remarkGovspeak from './remark-govspeak'
 
 
 export async function render(input: string) {
   const html = await unified()
     .use(remarkParse)
     .use(remarkAbbr)
+    .use(remarkGovspeak)
     .use(remarkRehype, {
         handlers: {
           abbrDefinition() {
@@ -20,7 +22,8 @@ export async function render(input: string) {
         }
       })
     .use(rehypeRaw)
-    .use(rehypeSanitize, schema)
+    // TODO - re-enable, but don't prevent built in classes from things like CTAs
+    //.use(rehypeSanitize, schema)
     .use(rehypeStringify).process(input)
 
   return String(html)
