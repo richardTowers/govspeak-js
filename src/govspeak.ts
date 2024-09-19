@@ -15,6 +15,7 @@ export async function render(input: string) {
     .use(remarkAbbr)
     .use(remarkGovspeak)
     .use(remarkRehype, {
+        allowDangerousHtml: true,
         handlers: {
           abbrDefinition() {
             return undefined
