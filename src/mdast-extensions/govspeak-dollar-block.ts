@@ -26,51 +26,39 @@ declare module 'mdast' {
   }
 }
 
-type GovspeakNodeTypes =
-  'govspeakAdditionalInformation' |
-  'govspeakAddress' |
-  'govspeakCallToAction' |
-  'govspeakContactBlock' |
-  'govspeakDownloads' |
-  'govspeakExampleCallout' |
-  'govspeakInformation' |
-  'govspeakPlace'
+export const govspeakDollarBlockNodes = [
+  { type: 'govspeakAdditionalInformation', className: 'additional-information' },
+  { type: 'govspeakAddress', className: 'address' },
+  { type: 'govspeakCallToAction', className: 'call-to-action' },
+  { type: 'govspeakContactBlock', className: 'contact' },
+  { type: 'govspeakDownloads', className: 'form-download' },
+  { type: 'govspeakExampleCallout', className: 'example' },
+  { type: 'govspeakInformation', className: 'information' },
+  { type: 'govspeakPlace', className: 'place' },
+] as const
+type GovspeakDollarBlockNode = typeof govspeakDollarBlockNodes[number]
 
 export function govspeakDollarBlockFromMarkdown(): FromMarkdownExtension {
   return {
     enter: {
-      govspeakCallToAction: createEnterGovspeakDollarBlock('govspeakCallToAction', 'call-to-action'),
-      govspeakPlace: createEnterGovspeakDollarBlock('govspeakPlace', 'place'),
-      govspeakAdditionalInformation: createEnterGovspeakDollarBlock('govspeakAdditionalInformation', 'additional-information'),
-      govspeakAddress: createEnterGovspeakDollarBlock('govspeakAddress', 'address'),
-      govspeakContactBlock: createEnterGovspeakDollarBlock('govspeakContactBlock', 'contact'),
-      govspeakDownloads: createEnterGovspeakDollarBlock('govspeakDownloads', 'form-download'),
-      govspeakExampleCallout: createEnterGovspeakDollarBlock('govspeakExampleCallout', 'example'),
-      govspeakInformation: createEnterGovspeakDollarBlock('govspeakInformation', 'information'),
+      ...Object.fromEntries(govspeakDollarBlockNodes.map(node => [node.type, createEnterGovspeakDollarBlock(node)])),
       govspeakDollarBlockContent: enterGovspeakDollarBlockContent,
     },
     exit: {
-      govspeakCallToAction: exit,
-      govspeakPlace: exit,
-      govspeakAdditionalInformation: exit,
-      govspeakAddress: exit,
-      govspeakContactBlock: exit,
-      govspeakDownloads: exit,
-      govspeakExampleCallout: exit,
-      govspeakInformation: exit,
+      ...Object.fromEntries(govspeakDollarBlockNodes.map(node => [node.type, exit])),
       govspeakDollarBlockContent: exit,
     }
   }
 
-  function createEnterGovspeakDollarBlock(type: GovspeakNodeTypes, className: string) {
+  function createEnterGovspeakDollarBlock(node: GovspeakDollarBlockNode) {
     return function enterGovspeakDollarBlock(this: CompileContext, token: Token) {
       this.enter(
         {
-          type: type,
+          type: node.type,
           children: [],
           data: {
             hName: 'div',
-            hProperties: { className }
+            hProperties: { className: node.className }
           }
         },
         token

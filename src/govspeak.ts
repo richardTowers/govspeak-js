@@ -22,8 +22,7 @@ export async function render(input: string) {
         }
       })
     .use(rehypeRaw)
-    // TODO - re-enable, but don't prevent built in classes from things like CTAs
-    //.use(rehypeSanitize, schema)
+    .use(rehypeSanitize, schema)
     .use(rehypeStringify).process(input)
 
   return String(html)

@@ -1,4 +1,5 @@
 import { defaultSchema, type Options } from 'rehype-sanitize'
+import { govspeakDollarBlockNodes } from '../mdast-extensions/govspeak-dollar-block'
 
 // From Govspeak::HtmlSanitizer.new('').sanitize_config[:elements]
 const allowedTags = `b em i strong u a abbr blockquote br cite code dd dfn dl dt kbd li mark ol p pre
@@ -9,7 +10,7 @@ table tbody td tfoot th thead title tr wbr govspeak-embed-attachment
 govspeak-embed-attachment-link svg path`.split(' ')
 
 // From Govspeak::HtmlSanitizer.new('').sanitize_config[:attributes].to_json
-const allowedAttributes: Record<string, string[]> = {
+const allowedAttributes: typeof defaultSchema.attributes = {
   '*': [
     "class", "dir", "hidden", "id", "lang", "tabindex", "title", "translate",
     "role", "aria-label",
@@ -44,7 +45,7 @@ const allowedAttributes: Record<string, string[]> = {
   ul: ["type"],
   svg: ["xmlns", "width", "height", "viewbox", "focusable"],
   path: ["fill", "d"],
-  div: ["data"],
+  div: ["data", ["className", ...govspeakDollarBlockNodes.map(node => node.className)]],
   "govspeak-embed-attachment": ["content-id"],
 }
 
