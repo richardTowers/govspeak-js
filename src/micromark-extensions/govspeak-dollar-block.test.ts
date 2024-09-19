@@ -5,7 +5,7 @@ import {preprocess, parse, postprocess} from 'micromark'
 test('returns an extension', async () => {
   const extension = govspeakDollarBlock()
   expect(extension).toBeInstanceOf(Object)
-  expect(Object.keys(extension)).toEqual(["document"])
+  expect(Object.keys(extension)).toEqual(["flow"])
 })
 
 test('parses calls to action', async () => {
@@ -19,18 +19,20 @@ test('parses calls to action', async () => {
   expect(eventTypes).toEqual(
     // prettier-ignore
     [
-      ["enter", "govspeakDollarBlockOpening"],
-      ["exit", "govspeakDollarBlockOpening"],
       ["enter", "govspeakCallToAction"],
-        ["enter", "lineEnding"],
-        ["exit", "lineEnding"],
-        ["enter", "chunkFlow"],
-        ["exit", "chunkFlow"],
-        ["enter", "lineEnding"],
-        ["exit", "lineEnding"],
+        ["enter", "govspeakDollarBlockMarker"],
+        ["exit", "govspeakDollarBlockMarker"],
+        ["enter", "govspeakDollarBlockContent"],
+          ["enter", "lineEnding"],
+          ["exit", "lineEnding"],
+          ["enter", "chunkFlow"],
+          ["exit", "chunkFlow"],
+          ["enter", "lineEnding"],
+          ["exit", "lineEnding"],
+        ["exit", "govspeakDollarBlockContent"],
+        ["enter", "govspeakDollarBlockMarker"],
+        ["exit", "govspeakDollarBlockMarker"],
       ["exit", "govspeakCallToAction"],
-      ["enter", "govspeakDollarBlockClosing"],
-      ["exit", "govspeakDollarBlockClosing"],
     ]
   )
 })

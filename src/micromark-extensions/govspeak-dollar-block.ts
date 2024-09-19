@@ -6,8 +6,8 @@ import { markdownLineEnding, } from 'micromark-util-character'
 declare module 'micromark-util-types' {
   interface TokenTypeMap {
     // Generic types for the boilerplate around the outside
-    govspeakDollarBlockOpening: 'govspeakDollarBlockOpening',
-    govspeakDollarBlockClosing: 'govspeakDollarBlockClosing',
+    govspeakDollarBlockMarker: 'govspeakDollarBlockMarker',
+    govspeakDollarBlockContent: 'govspeakDollarBlockContent',
     // Specific token types for the specific things
     govspeakExampleCallout: 'govspeakExampleCallout',
     govspeakContactBlock: 'govspeakContactBlock',
@@ -34,14 +34,11 @@ export function govspeakDollarBlock(): Extension {
   ]
 
   return {
-    // govspeak blocks are more like 
-    document: {
+    flow: {
       [codes.dollarSign]: blockTypes.map(blockType => { return {
         concrete: true,
         name: blockType.token,
         tokenize: govspeakDollarBlockTokenizeFactory(blockType.token, blockType.pattern),
-        // TODO: the fact that we need an exit call here probably means we've got a bug somewhere
-        exit: () => { console.log('exit called') }
       }})
     }
   }
@@ -68,7 +65,8 @@ export function govspeakDollarBlock(): Extension {
        */
       function start(code: Code): State | undefined {
         assert(code === codes.dollarSign, 'expected `$`')
-        effects.enter('govspeakDollarBlockOpening')
+        effects.enter(token)
+        effects.enter('govspeakDollarBlockMarker')
         effects.consume(code)
         return sequenceOpen
       }
@@ -87,10 +85,8 @@ export function govspeakDollarBlock(): Extension {
         if (pointer === pattern.length) {
           pointer = 0
           if (markdownLineEnding(code)) {
-            effects.exit('govspeakDollarBlockOpening')
-            // TODO - we're going to consume the first newline inside the token. Is that what we want?
-            effects.enter(token)
-            return atLineEnding(code)
+            effects.exit('govspeakDollarBlockMarker')
+            return afterOpen(code)
           }
           return nok(code)
         }
@@ -105,12 +101,27 @@ export function govspeakDollarBlock(): Extension {
       }
 
       /**
-       * At eol in block, before some content or the block close
+       * After the opening pattern, at eol
        *
        * ```markdown
        * > | $CTA
        *         ^
        *   | Call to Action!
+       *   | $CTA
+       * ```
+       */
+      function afterOpen(code: Code): State | undefined {
+        assert(markdownLineEnding(code), 'expected eol')
+        return effects.attempt(closeStart, ok, firstContentBefore)(code)
+      }
+
+      /**
+       * At eol in block, before some content or the block close
+       *
+       * ```markdown
+       * > | $CTA
+       *         ^
+       * > | Call to Action!
        *                    ^
        *   | $CTA
        * ```
@@ -118,6 +129,21 @@ export function govspeakDollarBlock(): Extension {
       function atLineEnding(code: Code): State | undefined {
         assert(markdownLineEnding(code), 'expected eol')
         return effects.attempt(closeStart, ok, contentBefore)(code)
+      }
+
+      /**
+       * Before the first line of content inside the block
+       *
+       * ```markdown
+       *   | $CTA
+       * > | Call to Action!
+       *     ^
+       *   | $CTA
+       * ```
+       */
+      function firstContentBefore(code: Code): State | undefined {
+        effects.enter('govspeakDollarBlockContent')
+        return contentBefore(code)
       }
 
       /**
@@ -205,8 +231,8 @@ export function govspeakDollarBlock(): Extension {
          */
         function start(code: Code): State | undefined {
           if (code === codes.dollarSign) {
-            effects.exit(token)
-            effects.enter('govspeakDollarBlockClosing')
+            effects.exit('govspeakDollarBlockContent')
+            effects.enter('govspeakDollarBlockMarker')
             effects.consume(code)
             return sequenceClose
           }
@@ -226,7 +252,8 @@ export function govspeakDollarBlock(): Extension {
         function sequenceClose(code: Code): State | undefined {
           if (pointer === pattern.length) {
             if (code === codes.eof || markdownLineEnding(code)) {
-              effects.exit('govspeakDollarBlockClosing')
+              effects.exit('govspeakDollarBlockMarker')
+              effects.exit(token)
               return ok(code)
             }
             return nok(code)
