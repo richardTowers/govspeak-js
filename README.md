@@ -29,7 +29,7 @@ An attempt at reimplementing https://github.com/alphagov/govspeak in JS, using
 | Place                   | $P                  | ❌ | New dollar block   |
 | Information             | $I                  | ❌ | New dollar block   |
 | Additional Information  | $AI                 | ❌ | New dollar block   |
-| Call to Action          | $CTA                | ❌ | New dollar block   |
+| Call to Action          | $CTA                | ✅️ | New dollar block   |
 | External Link           | x\[\]\(\)x          | ❌ | New link addition  |
 | Steps                   | s1.                 | ❌ | New list type      |
 | Legislative Lists       | \* 1.               | ❌ | New list type      |
