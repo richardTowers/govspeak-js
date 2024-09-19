@@ -39,7 +39,9 @@ export function govspeakDollarBlock(): Extension {
       [codes.dollarSign]: blockTypes.map(blockType => { return {
         concrete: true,
         name: blockType.token,
-        tokenize: govspeakDollarBlockTokenizeFactory(blockType.token, blockType.pattern)
+        tokenize: govspeakDollarBlockTokenizeFactory(blockType.token, blockType.pattern),
+        // TODO: the fact that we need an exit call here probably means we've got a bug somewhere
+        exit: () => { console.log('exit called') }
       }})
     }
   }
