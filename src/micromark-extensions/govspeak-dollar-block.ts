@@ -50,6 +50,7 @@ export function govspeakDollarBlock(): Extension {
     function tokenizeGovspeakDollarBlock(this: TokenizeContext, effects: Effects, ok: State, nok: State): State {
       const closeStart: Construct = {partial: true, tokenize: tokenizeCloseStart}
       let pointer = 0
+      let hasContent = false
 
       return start
 
@@ -142,6 +143,7 @@ export function govspeakDollarBlock(): Extension {
        * ```
        */
       function firstContentBefore(code: Code): State | undefined {
+        hasContent = true
         effects.enter('govspeakDollarBlockContent')
         return contentBefore(code)
       }
@@ -175,6 +177,9 @@ export function govspeakDollarBlock(): Extension {
        * ```
        */
       function contentStart(code: Code): State | undefined {
+        if (markdownLineEnding(code)) {
+          return atLineEnding(code)
+        }
         effects.enter(types.data)
         return contentChunk(code)
       }
@@ -234,7 +239,9 @@ export function govspeakDollarBlock(): Extension {
          */
         function start(code: Code): State | undefined {
           if (code === codes.dollarSign) {
-            effects.exit('govspeakDollarBlockContent')
+            if (hasContent) {
+              effects.exit('govspeakDollarBlockContent')
+            }
             effects.enter('govspeakDollarBlockMarker')
             effects.consume(code)
             return sequenceClose
