@@ -1,36 +1,80 @@
 import type {CompileContext, Extension as FromMarkdownExtension, Token} from 'mdast-util-from-markdown'
 import { Parent } from 'mdast'
 
-interface GovspeakCallToAction extends Parent {
-  type: 'govspeakCallToAction'
-}
-interface GovspeakPlace extends Parent {
-  type: 'govspeakPlace'
-}
+interface GovspeakAdditionalInformation extends Parent { type: 'govspeakAdditionalInformation' }
+interface GovspeakAddress extends Parent { type: 'govspeakAddress' }
+interface GovspeakCallToAction extends Parent { type: 'govspeakCallToAction' }
+interface GovspeakContactBlock extends Parent { type: 'govspeakContactBlock' }
+interface GovspeakDownloads extends Parent { type: 'govspeakDownloads' }
+interface GovspeakExampleCallout extends Parent { type: 'govspeakExampleCallout' }
+interface GovspeakInformation extends Parent { type: 'govspeakInformation' }
+interface GovspeakPlace extends Parent { type: 'govspeakPlace' }
 
-interface GovspeakDollarBlockContent extends Parent {
-  type: 'govspeakDollarBlockContent'
-}
+interface GovspeakDollarBlockContent extends Parent { type: 'govspeakDollarBlockContent' }
 
 declare module 'mdast' {
   interface RootContentMap {
+    govspeakAdditionalInformation: GovspeakAdditionalInformation,
+    govspeakAddress: GovspeakAddress,
     govspeakCallToAction: GovspeakCallToAction,
-    govspeakPlace: GovspeakPlace,
+    govspeakContactBlock: GovspeakContactBlock,
     govspeakDollarBlockContent: GovspeakDollarBlockContent
+    govspeakDownloads: GovspeakDownloads,
+    govspeakExampleCallout: GovspeakExampleCallout,
+    govspeakInformation: GovspeakInformation,
+    govspeakPlace: GovspeakPlace,
   }
 }
+
+type GovspeakNodeTypes =
+  'govspeakAdditionalInformation' |
+  'govspeakAddress' |
+  'govspeakCallToAction' |
+  'govspeakContactBlock' |
+  'govspeakDownloads' |
+  'govspeakExampleCallout' |
+  'govspeakInformation' |
+  'govspeakPlace'
 
 export function govspeakDollarBlockFromMarkdown(): FromMarkdownExtension {
   return {
     enter: {
-      govspeakCallToAction: enterGovspeakCallToAction,
-      govspeakPlace: enterGovspeakPlace,
+      govspeakCallToAction: createEnterGovspeakDollarBlock('govspeakCallToAction', 'call-to-action'),
+      govspeakPlace: createEnterGovspeakDollarBlock('govspeakPlace', 'place'),
+      govspeakAdditionalInformation: createEnterGovspeakDollarBlock('govspeakAdditionalInformation', 'additional-information'),
+      govspeakAddress: createEnterGovspeakDollarBlock('govspeakAddress', 'address'),
+      govspeakContactBlock: createEnterGovspeakDollarBlock('govspeakContactBlock', 'contact'),
+      govspeakDownloads: createEnterGovspeakDollarBlock('govspeakDownloads', 'form-download'),
+      govspeakExampleCallout: createEnterGovspeakDollarBlock('govspeakExampleCallout', 'example'),
+      govspeakInformation: createEnterGovspeakDollarBlock('govspeakInformation', 'information'),
       govspeakDollarBlockContent: enterGovspeakDollarBlockContent,
     },
     exit: {
       govspeakCallToAction: exit,
       govspeakPlace: exit,
+      govspeakAdditionalInformation: exit,
+      govspeakAddress: exit,
+      govspeakContactBlock: exit,
+      govspeakDownloads: exit,
+      govspeakExampleCallout: exit,
+      govspeakInformation: exit,
       govspeakDollarBlockContent: exit,
+    }
+  }
+
+  function createEnterGovspeakDollarBlock(type: GovspeakNodeTypes, className: string) {
+    return function enterGovspeakDollarBlock(this: CompileContext, token: Token) {
+      this.enter(
+        {
+          type: type,
+          children: [],
+          data: {
+            hName: 'div',
+            hProperties: { className }
+          }
+        },
+        token
+      )
     }
   }
 
@@ -43,38 +87,6 @@ export function govspeakDollarBlockFromMarkdown(): FromMarkdownExtension {
         hName: 'p'
       }
     }, token)
-  }
-
-  function enterGovspeakCallToAction(this: CompileContext, token: Token) {
-    this.enter(
-      {
-        type: 'govspeakCallToAction',
-        children: [],
-        data: {
-          hName: 'div',
-          hProperties: {
-            className: ['call-to-action']
-          }
-        }
-      },
-      token
-    )
-  }
-
-  function enterGovspeakPlace(this: CompileContext, token: Token) {
-    this.enter(
-      {
-        type: 'govspeakCallToAction',
-        children: [],
-        data: {
-          hName: 'div',
-          hProperties: {
-            className: ['place']
-          }
-        }
-      },
-      token
-    )
   }
 
   function exit(this: CompileContext, token: Token) {

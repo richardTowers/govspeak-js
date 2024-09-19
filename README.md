@@ -21,14 +21,14 @@ An attempt at reimplementing https://github.com/alphagov/govspeak in JS, using
 | Markdown Images         | \!\[\]\(\)          | ✅️ | Default markdown   |
 | Information callouts    | ^                   | ❌ | New attention?     |
 | Warning callouts        | %                   | ❌ | New attention?     |
-| Example callout         | $E                  | ❌ | New dollar block   |
+| Example callout         | $E                  | ✅ | New dollar block   |
 | Statistic headline      | {stat-headline}     | ❌ | New weird block    |
-| Contact Block           | $C                  | ❌ | New dollar block   |
-| Address                 | $A                  | ❌ | New dollar block   |
-| Downloads               | $D                  | ❌ | New dollar block   |
-| Place                   | $P                  | ❌ | New dollar block   |
-| Information             | $I                  | ❌ | New dollar block   |
-| Additional Information  | $AI                 | ❌ | New dollar block   |
+| Contact Block           | $C                  | ✅ | New dollar block   |
+| Address                 | $A                  | ✅ | New dollar block   |
+| Downloads               | $D                  | ✅ | New dollar block   |
+| Place                   | $P                  | ✅ | New dollar block   |
+| Information             | $I                  | ✅ | New dollar block   |
+| Additional Information  | $AI                 | ✅ | New dollar block   |
 | Call to Action          | $CTA                | ✅️ | New dollar block   |
 | External Link           | x\[\]\(\)x          | ❌ | New link addition  |
 | Steps                   | s1.                 | ❌ | New list type      |
