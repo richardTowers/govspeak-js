@@ -1,5 +1,5 @@
 import type { Processor } from "unified"
-import { govspeakDollarBlock } from '../micromark-extensions/govspeak-dollar-block.js'
+import { extension } from '../micromark-extensions/govspeak-dollar-block.js'
 import { govspeakDollarBlockFromMarkdown } from '../mdast-extensions/govspeak-dollar-block.js'
 
 export default function remarkGovspeak(this: Processor) {
@@ -11,6 +11,6 @@ export default function remarkGovspeak(this: Processor) {
   const fromMarkdownExtensions =
     data.fromMarkdownExtensions || (data.fromMarkdownExtensions = [])
 
-  micromarkExtensions.push(govspeakDollarBlock())
+  micromarkExtensions.push(extension)
   fromMarkdownExtensions.push(govspeakDollarBlockFromMarkdown())
 }
